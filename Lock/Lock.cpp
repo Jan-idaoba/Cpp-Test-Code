@@ -30,6 +30,27 @@ public:
 };
 
 
+class Y
+{
+private:
+    some_big_object some_detail;
+    std::mutex  m;
+
+public:
+    Y(some_big_object const& sd) :some_detail(sd) {}
+    friend void swap(Y& lhs, Y& rhs)
+    {
+        if (&lhs == &rhs) {
+            return;
+        }
+
+        std::unique_lock<std::mutex> lock_a(lhs.m, std::defer_lock);
+        std::unique_lock<std::mutex> lock_b(lhs.m, std::defer_lock);
+        std::lock(lock_a, lock_b);
+        swap(lhs.some_detail, rhs.some_detail);
+    }
+};
+
 int main()
 {
     std::cout << "Hello World!\n";
